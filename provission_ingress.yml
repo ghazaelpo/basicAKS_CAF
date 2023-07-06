@@ -1,0 +1,37 @@
+---
+- name: ingress
+  hosts: localhost
+
+  tasks:
+
+  - name: Add repository
+    ansible.builtin.shell: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+  - name: Update repo cache
+    ansible.builtin.shell: helm repo update
+
+  - name: Create namespace
+    ansible.builtin.shell: |
+      set -o pipefail && kubectl create namespace ingress-nginx --dry-run=client -o yaml | kubectl apply -f -
+
+  # - name: Copy values file
+  #   ansible.builtin.copy:
+  #     src: "ingress-nginx.yml"
+  #     dest: "/tmp/ingress-nginx.yml"
+
+  # - name: Install
+  #   ansible.builtin.shell: >
+  #     helm install myingress
+  #     ingress-nginx/ingress-nginx
+  #     -n ingress-nginx
+  #     --values /tmp/ingress-nginx.yml
+
+  - name: Install
+    ansible.builtin.shell: >
+      helm install myingress
+      ingress-nginx/ingress-nginx
+      -n ingress-nginx
+
+    # - name: Install
+    #   ansible.builtin.shell: >
+    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
